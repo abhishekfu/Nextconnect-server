@@ -2,6 +2,7 @@ const errorHandler = require('./handlers/error');
 const express = require('express');
 const app = express();
 const cors = require('cors');
+const Grid = require("gridfs-stream");
 const bodyParser = require('body-parser');
 const authRoutes = require('./routes/auth');
 const commentsRoutes = require('./routes/comments');
@@ -10,6 +11,8 @@ const { loginRequired, ensureCorrectUser } = require('./middleware/auth');
 const { getPostByUser, getAllPosts } = require('./handlers/post');
 const { getAllUsers, getUserById } = require('./handlers/auth');
 const db = require('./models');
+const {upload,getImage,deleteImage} = db.Grid;
+
 
 app.use(cors());
 app.use(function(req, res, next) {
@@ -30,6 +33,19 @@ app.get('/api/posts', loginRequired, getAllPosts);
 app.get('/api/users', getAllUsers);
 
 app.get('/api/users/:id', loginRequired, getUserById);
+
+//@route POST /upload
+//@desc Upload file to db
+app.post('/upload',upload.single('file'),(req,res)=>{
+    res.status(200).json({file:req.file});
+});
+//@route DELETE /files/:filename
+//@desc Delete file
+app.delete('/files/:filename',deleteImage)
+//@route GET /image/:filename
+//@desc Display image
+app.get('/image/:filename',getImage)
+
 
 app.use(function(req, res, next) {
 	let err = new Error('Not Found');
