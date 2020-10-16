@@ -1,4 +1,25 @@
 const db = require('../models');
+
+exports.getAllPosts = async function(req, res, next) {
+	try {
+		let posts = await db.Post
+			.find()
+			.sort({ createdAt: 'desc' })
+			.populate('postedBy', {
+				_id: true,
+				username: true,
+				profileImageUrl: true
+			})
+			.populate('comments', {
+				text: true,
+				commentedBy: true,
+				createdAt: true
+			});
+		return res.status(200).json({ posts });
+	} catch (e) {
+		return next(e);
+	}
+};
 //api/users/:id/posts
 exports.createPost = async function(req, res, next) {
 	try {
@@ -24,11 +45,16 @@ exports.createPost = async function(req, res, next) {
 //api/users/:id/posts
 exports.getPostByUser = async function(req, res, next) {
 	try {
-		let post = await db.Post.find({ postedBy: req.params.id }).populate('comments', {
-			text: true,
-			commentedBy: true,
-			createdAt: true
-		});
+		let post = await db.Post
+			.find({ postedBy: req.params.id })
+			.populate('comments', {
+				text: true,
+				commentedBy: true,
+				createdAt: true
+			})
+			.populate('postedBy', {
+				username: true
+			});
 
 		return res.status(200).json(post);
 	} catch (e) {

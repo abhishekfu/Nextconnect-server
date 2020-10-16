@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true });
 
-const { createPost, getPostByUser, getPost, deletePost, addLike, removeLike } = require('../handlers/post');
+const { createPost, getPost, deletePost, addLike, removeLike } = require('../handlers/post');
 
-router.route('/').post(createPost).get(getPostByUser);
+router.route('/').post(createPost);
 
 router.route('/:post_id').get(getPost).delete(deletePost);
 

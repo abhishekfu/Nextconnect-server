@@ -66,3 +66,28 @@ exports.signup = async function(req, res, next) {
 		});
 	}
 };
+
+exports.getAllUsers = async function(req, res, next) {
+	try {
+		let users = await db.User.find();
+		return res.status(200).json({ users });
+	} catch (e) {
+		return next(e);
+	}
+};
+
+exports.getUserById = async function(req, res, next) {
+	try {
+		let user = await db.User.findById(req.params.id).populate('posts', {
+			text: true,
+			imageUrl: true,
+			isImage: true,
+			likes: true,
+			comments: true
+		});
+
+		return res.status(200).json({ user });
+	} catch (e) {
+		return next(e);
+	}
+};
